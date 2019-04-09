@@ -22,7 +22,7 @@ void setup()
  //pinmodes
 }
 
-uint8_t read_temp(uint8_t pin)
+uint16_t read_and_average(uint8_t pin)
 {
   uint32_t average = 0;
   for (int i = 0; i < NUMSAMPLES; i++)
@@ -31,14 +31,14 @@ uint8_t read_temp(uint8_t pin)
     delay(1);
   }
   average /= NUMSAMPLES;
-  average = 1023 / average - 1;
-  average = SERIESRESISTOR / average;
   return average;
 }
 
 uint8_t read_measured()
 {
-  uint8_t measured = read_temp(THERMISTOR_PIN);
+  uint16_t measured = read_and_average(THERMISTOR_PIN);
+  measured = 1023 / measured - 1;
+  measured = SERIESRESISTOR / measured;
   Serial.print("Thermistor resistance: "); 
   Serial.print(measured);
   Serial.println("Ohms");
@@ -56,9 +56,8 @@ uint8_t read_measured()
 
 uint8_t read_target()
 {
-  uint8_t target = read_temp(POTENTIOMETER_PIN);
-  target = map(target, 0, 1023, POT_RANGE_LOW, POT_RANGE_HIGH);
-	return target;
+  uint16_t target = read_and_average(POTENTIOMETER_PIN);
+	return map(target, 0, 1023, POT_RANGE_LOW, POT_RANGE_HIGH);
 }
 
 void control_relay(uint8_t measured, uint8_t target)

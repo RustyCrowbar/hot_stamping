@@ -36,12 +36,12 @@ uint16_t read_and_average(uint8_t pin)
 
 uint8_t read_measured()
 {
-  uint16_t measured = read_and_average(THERMISTOR_PIN);
+  float measured = read_and_average(THERMISTOR_PIN);
   measured = 1023 / measured - 1;
   measured = SERIESRESISTOR / measured;
-  Serial.print("Thermistor resistance: "); 
+  Serial.print("Thermistor resistance: ");
   Serial.print(measured);
-  Serial.println("Ohms");
+  Serial.println(" Ohms");
   float steinhart;
   steinhart = measured / THERMISTORNOMINAL;     // (R/Ro)
   steinhart = log(steinhart);                  // ln(R/Ro)
@@ -78,7 +78,7 @@ void control_relay(uint8_t measured, uint8_t target)
 	Serial.print(activated ? "on" : "off");
 	Serial.println(" state.");
 	//write !activated on pin (relay must be off by default).
-  digitalWrite(RELAY_PIN, !activated);
+  digitalWrite(RELAY_PIN, activated);
 }
 
 void print_temperatures(uint8_t measured, uint8_t target)
